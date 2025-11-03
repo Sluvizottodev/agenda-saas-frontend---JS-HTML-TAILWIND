@@ -1,0 +1,23 @@
+{
+  "name": "projeto_victor_front",
+  "version": "1.0.0",
+  "description": "Frontend do projeto agenda-saas",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "scripts": {
+    "test": ""
+  },
+  "dependencies": {
+    "axios": "^1.4.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^4.1.16",
+    "http-server": "^14.1.1"
+  }
+}
