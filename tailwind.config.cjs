@@ -1,7 +1,3 @@
-/**
- * tailwind.config.cjs
- * Versão limpa e com tipografia simplificada para Agenda SaaS
- */
 module.exports = {
   darkMode: 'class',
 
