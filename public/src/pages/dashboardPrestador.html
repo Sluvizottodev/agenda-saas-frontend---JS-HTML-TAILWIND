@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>Dashboard — Prestador</title>
+	<script>
+	  (function(){
+	    try{
+	      const href = '/styles/tailwind.css';
+	      const url = new URL(href, location.origin); url.searchParams.set('ts', Date.now());
+	      const link = document.createElement('link'); link.rel='stylesheet'; link.href = url.toString(); document.head.appendChild(link);
+	      fetch(href,{ method:'HEAD' }).then(res=>{ if(!res.ok){ const s=document.createElement('script'); s.src='https://cdn.tailwindcss.com'; document.head.appendChild(s); } }).catch(()=>{ const s=document.createElement('script'); s.src='https://cdn.tailwindcss.com'; document.head.appendChild(s); });
+	    }catch(e){ const s=document.createElement('script'); s.src='https://cdn.tailwindcss.com'; document.head.appendChild(s); }
+	  })();
+	</script>
+	</head>
+	<body>
+		<header data-component="header"></header>
+
+		<div data-component="dashboard"></div>
+
+		<footer data-component="footer"></footer>
+
+	<script type="module">
+		import { loadComponents } from '/src/js/components-loader.js';
+		document.addEventListener('DOMContentLoaded', async () => {
+			await loadComponents();
+			const roleArea = document.getElementById('role-area');
+			const title = document.getElementById('dashboard-title');
+			if (title) title.textContent = 'Dashboard — Prestador';
+
+			const next = document.getElementById('stat-next-appointments');
+			const rev = document.getElementById('stat-revenue');
+			const rating = document.getElementById('stat-rating');
+			if (next) next.textContent = '3';
+			if (rev) rev.textContent = 'R$ 4.200,00';
+			if (rating) rating.textContent = '4.8 ⭐';
+
+			if (roleArea) roleArea.innerHTML = `
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div class="bg-white rounded shadow p-4">
+						<h3 class="font-semibold">Agenda do dia</h3>
+						<ul class="mt-2 text-sm text-gray-700">
+							<li>09:00 — João Silva — Corte de cabelo</li>
+							<li>11:00 — Maria Souza — Manicure</li>
+							<li>15:30 — Carlos Mendes — Coloração</li>
+						</ul>
+					</div>
+					<div class="bg-white rounded shadow p-4">
+						<h3 class="font-semibold">Serviços concluídos (7 dias)</h3>
+						<div class="mt-2 text-3xl font-bold">28</div>
+					</div>
+				</div>
+				<div class="mt-4 bg-white rounded shadow p-4">
+					<h3 class="font-semibold">Ganhos recentes</h3>
+					<div class="mt-2 text-lg">R$ 4.200,00</div>
+				</div>
+			`;
+		});
+	</script>
+	</body>
+</html>

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Perfil</title>
+  <script>
+    (function(){
+      try{
+        const href = '/styles/tailwind.css';
+        const url = new URL(href, location.origin);
+        url.searchParams.set('ts', Date.now());
+        const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = url.toString(); document.head.appendChild(link);
+        fetch(href,{ method:'HEAD' }).then(res=>{ if(!res.ok){ const s=document.createElement('script'); s.src='https://cdn.tailwindcss.com'; document.head.appendChild(s); } }).catch(()=>{ const s=document.createElement('script'); s.src='https://cdn.tailwindcss.com'; document.head.appendChild(s); });
+      }catch(e){ const s=document.createElement('script'); s.src='https://cdn.tailwindcss.com'; document.head.appendChild(s); }
+    })();
+  </script>
+  <style>body{padding:1rem}</style>
+</head>
+<body>
+  <header data-component="header"></header>
+
+  <main class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-semibold mb-4">Meu Perfil</h1>
+
+    <div id="profile-area" class="bg-white p-4 rounded shadow">
+      <div id="profile-loading" class="text-gray-600">Carregando...</div>
+    </div>
+  </main>
+
+  <footer data-component="footer"></footer>
+
+  <script type="module">
+    import { loadComponents } from '/src/js/components-loader.js';
+    import api from '/src/js/api/api.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadComponents();
+      const area = document.getElementById('profile-area');
+      const loading = document.getElementById('profile-loading');
+
+      let user = null;
+      try { const s = localStorage.getItem('user'); if (s) user = JSON.parse(s); } catch (e) { user = null; }
+      if (!user && window.__USER__) user = window.__USER__;
+  if (!user) { function resolve(p){ const path=location.pathname||''; const inPages=path.includes('/pages/')||path.includes('/src/pages/'); return inPages? p : '/src/pages/'+p; } window.location.href = resolve('login.html'); return; }
+
+      loading.remove();
+      const form = document.createElement('form');
+      form.className = 'space-y-4';
+
+      const nameWrap = document.createElement('div');
+      const lblName = document.createElement('label'); lblName.textContent = 'Nome'; lblName.className='block text-sm font-medium text-gray-700';
+      const inpName = document.createElement('input'); inpName.type='text'; inpName.name='name'; inpName.value = user.name || ''; inpName.className='mt-1 block w-full rounded border-gray-300 px-3 py-2';
+      nameWrap.appendChild(lblName); nameWrap.appendChild(inpName);
+
+      const emailWrap = document.createElement('div');
+      const lblEmail = document.createElement('label'); lblEmail.textContent = 'Email'; lblEmail.className='block text-sm font-medium text-gray-700';
+      const inpEmail = document.createElement('input'); inpEmail.type='email'; inpEmail.name='email'; inpEmail.value = user.email || ''; inpEmail.className='mt-1 block w-full rounded border-gray-300 px-3 py-2';
+      emailWrap.appendChild(lblEmail); emailWrap.appendChild(inpEmail);
+
+      const roleWrap = document.createElement('div');
+      const lblRole = document.createElement('label'); lblRole.textContent = 'Role'; lblRole.className='block text-sm font-medium text-gray-700';
+      const selRole = document.createElement('select'); selRole.name='role'; selRole.className='mt-1 block w-full rounded border-gray-300 px-3 py-2';
+      ['cliente','prestador'].forEach(r => { const o = document.createElement('option'); o.value = r; o.textContent = r; if (user.role===r) o.selected=true; selRole.appendChild(o); });
+      roleWrap.appendChild(lblRole); roleWrap.appendChild(selRole);
+
+      const btn = document.createElement('button'); btn.type='submit'; btn.className='px-4 py-2 bg-blue-600 text-white rounded'; btn.textContent='Salvar alterações';
+
+      form.appendChild(nameWrap); form.appendChild(emailWrap); form.appendChild(roleWrap); form.appendChild(btn);
+      area.innerHTML=''; area.appendChild(form);
+
+      form.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        const payload = { name: inpName.value.trim(), email: inpEmail.value.trim(), role: selRole.value };
+        btn.disabled = true; btn.textContent = 'Salvando...';
+        try {
+          if (user.id) {
+            try {
+              await api.updateEntity('users', user.id, payload);
+            } catch(e) {
+            }
+          }
+          const updated = Object.assign({}, user, payload);
+          localStorage.setItem('user', JSON.stringify(updated));
+          const evt = new CustomEvent('app:toast', { detail: { message: 'Perfil atualizado', kind: 'success' } }); window.dispatchEvent(evt);
+        } catch (err) {
+          const evt = new CustomEvent('app:toast', { detail: { message: err.message || 'Erro ao salvar', kind: 'error' } }); window.dispatchEvent(evt);
+        } finally { btn.disabled = false; btn.textContent = 'Salvar alterações'; }
+      });
+    });
+  </script>
+</body>
+</html>

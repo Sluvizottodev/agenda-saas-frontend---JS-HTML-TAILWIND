@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>Agenda - Listagem</title>
+		<script>
+		  (function(){
+		    try{
+		      const href = '/styles/tailwind.css';
+		      const url = new URL(href, location.origin);
+		      url.searchParams.set('ts', Date.now());
+		      const link = document.createElement('link');
+		      link.rel = 'stylesheet'; link.href = url.toString(); document.head.appendChild(link);
+
+		      fetch(href,{ method: 'HEAD' }).then(res=>{ if(!res.ok){ const s=document.createElement('script'); s.src='https://cdn.tailwindcss.com'; document.head.appendChild(s); } }).catch(()=>{ const s=document.createElement('script'); s.src='https://cdn.tailwindcss.com'; document.head.appendChild(s); });
+		    }catch(e){ const s=document.createElement('script'); s.src='https://cdn.tailwindcss.com'; document.head.appendChild(s); }
+		  })();
+		</script>
+		<style>body{padding:1rem}</style>
+</head>
+<body>
+	<header data-component="header"></header>
+
+	<main class="max-w-4xl mx-auto">
+		<section class="mb-6">
+			<div data-component="entityForm"></div>
+		</section>
+
+		<section>
+			<div data-component="entityList"></div>
+		</section>
+	</main>
+
+	<footer data-component="footer"></footer>
+
+		
+		<script type="module">
+	import { loadComponents } from '/src/js/components-loader.js';
+			import { renderList, renderForm } from '/src/js/utils/fetchers.js';
+
+		const ENTITY = 'appointments';
+
+		document.addEventListener('DOMContentLoaded', async () => {
+			await loadComponents();
+
+			const listWrapper = document.querySelector('[data-component] [data-list-root]') || document.querySelector('[data-component="entityList"]').querySelector('[data-list-root]');
+			const formWrapper = document.querySelector('[data-component] [data-form-root]') || document.querySelector('[data-component="entityForm"]').querySelector('[data-form-root]');
+
+			const listRoot = document.querySelector('[data-component="entityList"]').querySelector('[data-list-root]');
+			const formRoot = document.querySelector('[data-component="entityForm"]').querySelector('[data-form-root]');
+
+			renderForm(formRoot, ENTITY, [
+				{ name: 'title', label: 'Título' },
+				{ name: 'client', label: 'Cliente' },
+				{ name: 'date', label: 'Data/Hora', type: 'datetime-local' }
+			], { onSaved: () => renderList(listRoot, ENTITY, ['id','title','client','date']) });
+
+			renderList(listRoot, ENTITY, ['id','title','client','date'], { onDeleted: () => renderList(listRoot, ENTITY, ['id','title','client','date']) });
+		});
+	</script>
+
+</body>
+</html>

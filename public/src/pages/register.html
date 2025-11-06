@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Register</title>
+        <style>body{padding:1rem}</style>
+</head>
+<body>
+    <header data-component="header"></header>
+
+    <main class="max-w-2xl mx-auto">
+        <div data-component="registerForm"></div>
+    </main>
+
+    <footer data-component="footer"></footer>
+
+    <script type="module">
+        import { loadComponents } from '/src/js/components-loader.js';
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadComponents();
+        });
+    </script>
+</body>
+</html>

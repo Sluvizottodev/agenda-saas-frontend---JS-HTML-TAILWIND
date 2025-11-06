@@ -1,0 +1,24 @@
+<header class="w-full bg-white shadow">
+	<div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+		<a id="header-logo" href="#" class="text-lg font-bold">Agenda SaaS</a>
+		<div class="md:hidden">
+			<button id="header-toggle" aria-expanded="false" aria-controls="header-menu" class="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300">
+				<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+			</button>
+		</div>
+
+		<nav id="header-menu" class="hidden md:flex items-center space-x-4" role="navigation" aria-label="Main navigation">
+			<div id="nav-logged-out" class="space-x-4">
+				<a id="link-login" href="#" class="text-sm text-gray-600 hover:text-blue-600">Login</a>
+				<a id="link-register" href="#" class="text-sm text-gray-600 hover:text-blue-600">Registrar</a>
+			</div>
+			<div id="nav-logged-in" class="hidden items-center space-x-4">
+				<span id="header-username" class="text-sm text-gray-700"></span>
+				<a id="link-agenda" href="#" class="text-sm text-gray-600 hover:text-blue-600">Agenda</a>
+				<a id="link-dashboard" href="#" class="text-sm text-gray-600 hover:text-blue-600">Dashboard</a>
+				<a id="link-profile" href="#" class="text-sm text-gray-600 hover:text-blue-600">Perfil</a>
+				<button id="btn-logout" class="text-sm text-red-600">Sair</button>
+			</div>
+		</nav>
+	</div>
+</header>
