@@ -4,8 +4,10 @@ module.exports = {
   content: [
     './public/**/*.html',
     './public/**/*.js',
-    './src/**/*.js',
-    './components/**/*.{html,js}',
+    './public/src/**/*.js',
+    './public/src/**/*.html',
+    './public/src/components/**/*.{html,js}',
+    './public/styles/**/*.css',
     './styles/**/*.css'
   ],
   theme: {
@@ -28,7 +30,7 @@ module.exports = {
     },
 
     extend: {
-      colors: { //dps troco as cores
+      colors: {
         primary: '#10b981',
         secondary: '#f59e0b',
         tertiary: '#60a5fa',
@@ -37,9 +39,9 @@ module.exports = {
         danger: '#ef4444'
       },
 
-        fontFamily: {
-          sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif']
-        },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif']
+      },
 
       spacing: {
         'sm': '0.5rem',
@@ -73,6 +75,5 @@ module.exports = {
     }
   },
 
-  plugins: [
-  ],
+  plugins: [],
 };
