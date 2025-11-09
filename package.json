@@ -9,6 +9,8 @@
   },
   "scripts": {
     "start": "http-server ./public -p 3000",
+    "build:css": "postcss ./styles/tailwind.css -o ./public/styles/tailwind.css --env production",
+    "watch:css": "postcss ./styles/tailwind.css -o ./public/styles/tailwind.css --watch",
     "dev": "nodemon --watch public --ext js,css,html --exec \"http-server ./public -p 3000\"",
     "test": ""
   },
