@@ -5,26 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Login</title>
-                <script>
-                    (function(){
-                        try{
-                            const href = '/styles/tailwind.css';
-                            const url = new URL(href, location.origin);
-                            url.searchParams.set('ts', Date.now());
-                            const link = document.createElement('link');
-                            link.rel = 'stylesheet';
-                            link.href = url.toString();
-                            document.head.appendChild(link);
-
-                            fetch(href, { method: 'HEAD' }).then(res => {
-                                if (!res.ok) {
-                                    const s = document.createElement('script'); s.src = 'https://cdn.tailwindcss.com'; document.head.appendChild(s);
-                                }
-                            }).catch(() => { const s = document.createElement('script'); s.src = 'https://cdn.tailwindcss.com'; document.head.appendChild(s); });
-                        }catch(e){ const s = document.createElement('script'); s.src = 'https://cdn.tailwindcss.com'; document.head.appendChild(s); }
-                    })();
-                </script>
-        <style>body{padding:1rem}</style>
+                <link rel="stylesheet" href="/styles/tailwind.css">
+                <style>body{padding:1rem}</style>
 </head>
 <body>
         
@@ -35,10 +17,10 @@
         </main>
 
         
-    <script type="module" src="/src/js/components-loader.js"></script>
+    <script type="module" src="../js/components-loader.js"></script>
 
             <script type="module">
-                import { loadComponents } from '/src/js/components-loader.js';
+                import { loadComponents } from '../js/components-loader.js';
                 document.addEventListener('DOMContentLoaded', async () => {
                     await loadComponents().catch(() => {});
 
@@ -47,7 +29,7 @@
                     const btn = document.getElementById('btnLogin');
 
                     function showFeedback(message, kind){
-                        try{ window.dispatchEvent(new CustomEvent('app:toast', { detail: { message: message, kind: kind } })); }catch(e){}
+                        try{ globalThis.dispatchEvent(new CustomEvent('app:toast', { detail: { message: message, kind: kind } })); }catch(e){}
                         if(feedback){
                             feedback.textContent = message;
                             feedback.className = kind === 'error' ? 'text-sm text-red-600' : 'text-sm text-green-600';
@@ -66,7 +48,7 @@
 
                         btn.disabled = true; const original = btn.textContent; btn.textContent = 'Entrando...';
                         try{
-                            var base = window.API_BASE || window.__API_BASE__ || '';
+                            var base = globalThis.API_BASE || globalThis.__API_BASE__ || '';
                             function resolve(p){ const path=location.pathname||''; const inPages=path.includes('/pages/')||path.includes('/src/pages/'); return inPages? p : '/src/pages/'+p; }
                             if(base){
                                 var res = await fetch((base.endsWith('/')?base.slice(0,-1):base) + '/auth/login', {
@@ -75,14 +57,14 @@
                                 });
                                 if(!res.ok) throw new Error('Credenciais inválidas');
                                 showFeedback('Entrando...', 'success');
-                                window.location.replace(resolve('agenda.html'));
+                                globalThis.location.replace(resolve('agenda.html'));
                                 return;
                             }
 
                             await new Promise(r=>setTimeout(r,700));
                             try { var mock = { id: 'local-1', name: 'Usuário Teste', email: email, role: 'cliente' }; localStorage.setItem('user', JSON.stringify(mock)); } catch(e){}
                             showFeedback('Login efetuado (simulado). Redirecionando...', 'success');
-                            setTimeout(()=> window.location.replace(resolve('agenda.html')), 600);
+                            setTimeout(()=> globalThis.location.replace(resolve('agenda.html')), 600);
                         }catch(err){ console.error(err); showFeedback(err.message || 'Falha ao autenticar', 'error'); }
                         finally{ btn.disabled = false; btn.textContent = original; }
                     });
