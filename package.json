@@ -8,9 +8,9 @@
     ".": "./index.js"
   },
   "scripts": {
+    "build:css": "npx tailwindcss -i ./public/styles/tailwind.css -o ./public/styles/style.css --minify",
+    "watch:css": "npx tailwindcss -i ./public/styles/tailwind.css -o ./public/styles/style.css --watch",
     "start": "http-server ./public -p 3000",
-    "build:css": "postcss ./styles/tailwind.css -o ./public/styles/tailwind.css --env production",
-    "watch:css": "postcss ./styles/tailwind.css -o ./public/styles/tailwind.css --watch",
     "dev": "nodemon --watch public --ext js,css,html --exec \"http-server ./public -p 3000\"",
     "test": ""
   },
@@ -27,6 +27,6 @@
     "nodemon": "^3.0.3",
     "postcss": "^8.5.6",
     "postcss-cli": "^11.0.1",
-    "tailwindcss": "^4.1.17"
+    "tailwindcss": "^3.4.18"
   }
 }

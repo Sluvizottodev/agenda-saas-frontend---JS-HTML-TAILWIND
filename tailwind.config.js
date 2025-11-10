@@ -1,14 +1,8 @@
-module.exports = {
+export default {
   darkMode: 'class',
-
   content: [
-    './public/**/*.html',
-    './public/**/*.js',
-    './public/src/**/*.js',
-    './public/src/**/*.html',
-    './public/src/components/**/*.{html,js}',
-    './public/styles/**/*.css',
-    './styles/**/*.css'
+    "./public/**/*.html",
+    "./public/**/*.js",
   ],
   theme: {
     container: {
@@ -20,7 +14,6 @@ module.exports = {
         xl: '3rem'
       }
     },
-
     screens: {
       sm: '640px',
       md: '768px',
@@ -28,7 +21,6 @@ module.exports = {
       xl: '1280px',
       '2xl': '1536px'
     },
-
     extend: {
       colors: {
         primary: '#10b981',
@@ -38,11 +30,9 @@ module.exports = {
         success: '#10b981',
         danger: '#ef4444'
       },
-
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif']
       },
-
       spacing: {
         'sm': '0.5rem',
         'md': '1rem',
@@ -50,19 +40,16 @@ module.exports = {
         'xl': '2rem',
         '2xl': '3rem'
       },
-
       borderRadius: {
         sm: '0.375rem',
         DEFAULT: '0.5rem',
         lg: '0.75rem',
         xl: '1rem'
       },
-
       boxShadow: {
         subtle: '0 4px 10px rgba(2,6,23,0.06)',
         card: '0 10px 30px rgba(2,6,23,0.08)'
       },
-
       keyframes: {
         fadeInUp: {
           '0%': { opacity: '0', transform: 'translateY(6px)' },
@@ -74,6 +61,5 @@ module.exports = {
       }
     }
   },
-
   plugins: [],
 };
