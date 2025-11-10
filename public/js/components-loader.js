@@ -7,7 +7,7 @@ import { initRegisterForm } from './init/registerForm.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const links = Array.from(document.querySelectorAll('link[rel="stylesheet"][href*="tailwind.css"]'));
+    const links = Array.from(document.querySelectorAll('link[rel="stylesheet"][href*="style.css"]'));
     links.forEach(l => {
       const url = new URL(l.getAttribute('href'), location.origin);
       url.searchParams.set('ts', Date.now());
