@@ -1,5 +1,6 @@
 import api from '../api/api.js';
 import { showToast } from './toast.js';
+import { required, isEmail, isPasswordStrong, isISODate } from './validators/index.js';
 
 export async function renderForm(container, entity, fields = [{ name: 'title', label: 'Título' }], options = {}) {
   const form = document.createElement('form');
@@ -36,17 +37,55 @@ export async function renderForm(container, entity, fields = [{ name: 'title', l
     const inputs = Array.from(form.querySelectorAll('input,textarea,select')).filter(i => i.name);
     const values = {};
     let firstInvalid = null;
+    let firstErrorMessage = null;
+
+  const runRule = (rule, val) => {
+      try {
+        if (typeof rule === 'function') return rule(val);
+        if (typeof rule === 'string') {
+          switch (rule) {
+            case 'required': return required(val);
+            case 'email': return isEmail(val);
+            case 'password': return isPasswordStrong(val);
+            case 'isIsoDate': return isISODate(val);
+            default: return { valid: true };
+          }
+        }
+      } catch (e) {
+        return { valid: true };
+      }
+      return { valid: true };
+    };
+
     for (const inp of inputs) {
-      const val = inp.value && inp.value.trim();
-      if (inp.required && !val) {
+      const raw = inp.value == null ? '' : inp.value;
+      const val = typeof raw === 'string' ? raw.trim() : raw;
+
+  const fieldDef = (Array.isArray(fields) && fields.find(f => f.name === inp.name)) || null;
+  const validatorsList = (fieldDef && fieldDef.validators) || [];
+      if (!validatorsList || validatorsList.length === 0) {
+        if (inp.required) validatorsList.push('required');
+      }
+
+      let valid = true;
+      for (const rule of validatorsList) {
+        const res = runRule(rule, val);
+        if (!res || res.valid === false) {
+          valid = false;
+          if (!firstInvalid) firstInvalid = inp;
+          if (!firstErrorMessage && res && res.message) firstErrorMessage = res.message;
+          break;
+        }
+      }
+
+      if (!valid) {
         inp.classList.add('border-red-500');
-        if (!firstInvalid) firstInvalid = inp;
       } else {
         inp.classList.remove('border-red-500');
       }
       values[inp.name] = val;
     }
-    if (firstInvalid) { firstInvalid.focus(); showToast('Preencha os campos obrigatórios', 'error'); return; }
+    if (firstInvalid) { firstInvalid.focus(); showToast(firstErrorMessage || 'Preencha os campos corretamente', 'error'); return; }
 
     try {
       btnSubmit.disabled = true;

@@ -1,5 +1,6 @@
 import api from '../api/api.js';
 import { showToast } from './toast.js';
+import { formatDateReadable } from './format.js';
 
 export async function renderList(container, entity, fields = ['id', 'title'], options = {}) {
   container.innerHTML = '<div class="p-4">Carregando...</div>';
@@ -41,7 +42,15 @@ export async function renderList(container, entity, fields = ['id', 'title'], op
       fields.forEach(f => {
         const td = document.createElement('td');
         td.className = 'px-4 py-2 text-sm text-gray-700';
-        td.textContent = item[f] ?? '';
+        const raw = item[f];
+        // format date-like values for better UX
+        if (raw == null) {
+          td.textContent = '';
+        } else if (f === 'date' || (typeof raw === 'string' && /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(raw))) {
+          td.textContent = formatDateReadable(raw);
+        } else {
+          td.textContent = String(raw);
+        }
         tr.appendChild(td);
       });
 

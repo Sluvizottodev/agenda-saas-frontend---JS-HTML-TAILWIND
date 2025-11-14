@@ -4,71 +4,77 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Login</title>
-                <link rel="stylesheet" href="/styles/tailwind.css">
-                <style>body{padding:1rem}</style>
+    <title>Login</title>
+    <link rel="stylesheet" href="../styles/style.css">
 </head>
-<body>
-        
-        <main class="min-h-[70vh] flex items-center justify-center px-4">
-                <div class="w-full max-w-md">
-                        <div data-component="formLogin"></div>
-                </div>
-        </main>
+<body class="bg-gray-50 font-sans min-h-screen text-gray-800">
 
-        
-    <script type="module" src="../js/components-loader.js"></script>
+    <main class="min-h-[70vh] flex items-center justify-center px-4 py-12">
+        <div class="w-full max-w-md">
+            <div data-component="formLogin"></div>
+        </div>
+    </main>
 
-            <script type="module">
-                import { loadComponents } from '../js/components-loader.js';
-                document.addEventListener('DOMContentLoaded', async () => {
-                    await loadComponents().catch(() => {});
 
-                    const form = document.getElementById('formLogin');
-                    const feedback = document.getElementById('loginFeedback');
-                    const btn = document.getElementById('btnLogin');
+    <script type="module">
+    import { loadComponents } from '../js/components-loader.js';
+    import { required, isEmail } from '../js/utils/validators/index.js';
+    import { resolvePath, dashboardForUser } from '../js/utils/roleRouter.js';
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadComponents().catch(() => {});
 
-                    function showFeedback(message, kind){
-                        try{ globalThis.dispatchEvent(new CustomEvent('app:toast', { detail: { message: message, kind: kind } })); }catch(e){}
-                        if(feedback){
-                            feedback.textContent = message;
-                            feedback.className = kind === 'error' ? 'text-sm text-red-600' : 'text-sm text-green-600';
-                        }
+            const form = document.getElementById('formLogin');
+            const feedback = document.getElementById('loginFeedback');
+            const btn = document.getElementById('btnLogin');
+
+            function showFeedback(message, kind){
+                try{ globalThis.dispatchEvent(new CustomEvent('app:toast', { detail: { message: message, kind: kind } })); }catch(e){}
+                if(feedback){
+                    feedback.textContent = message;
+                    feedback.className = kind === 'error' ? 'text-sm text-red-600' : 'text-sm text-green-600';
+                }
+            }
+
+            if (!form) return;
+
+            form.addEventListener('submit', async function(ev){
+                ev.preventDefault();
+                var data = new FormData(form);
+                var email = (data.get('email')||'').toString().trim();
+                var password = (data.get('password')||'').toString();
+
+                // validate
+                const vEmailReq = required(email);
+                if (!vEmailReq.valid) { showFeedback(vEmailReq.message, 'error'); return; }
+                const vEmail = isEmail(email);
+                if (!vEmail.valid) { showFeedback(vEmail.message, 'error'); return; }
+                const vPass = required(password);
+                if (!vPass.valid) { showFeedback(vPass.message, 'error'); return; }
+
+                btn.disabled = true; const original = btn.textContent; btn.textContent = 'Entrando...';
+                try{
+                    var base = globalThis.API_BASE || globalThis.__API_BASE__ || '';
+                    function resolve(p){ const path=location.pathname||''; const inPages=path.includes('/pages/')||path.includes('/src/pages/'); return inPages? p : '/src/pages/'+p; }
+                    if(base){
+                        var res = await fetch((base.endsWith('/')?base.slice(0,-1):base) + '/auth/login', {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email: email, password: password }),
+                        });
+                        if(!res.ok) throw new Error('Credenciais inválidas');
+                        showFeedback('Entrando...', 'success');
+                        // try to redirect to agenda by default (API may return role/token).
+                        globalThis.location.replace(resolvePath('agenda.html'));
+                        return;
                     }
 
-                    if (!form) return;
-
-                    form.addEventListener('submit', async function(ev){
-                        ev.preventDefault();
-                        var data = new FormData(form);
-                        var email = (data.get('email')||'').toString().trim();
-                        var password = (data.get('password')||'').toString();
-
-                        if(!email || !password){ showFeedback('Preencha email e senha.', 'error'); return; }
-
-                        btn.disabled = true; const original = btn.textContent; btn.textContent = 'Entrando...';
-                        try{
-                            var base = globalThis.API_BASE || globalThis.__API_BASE__ || '';
-                            function resolve(p){ const path=location.pathname||''; const inPages=path.includes('/pages/')||path.includes('/src/pages/'); return inPages? p : '/src/pages/'+p; }
-                            if(base){
-                                var res = await fetch((base.endsWith('/')?base.slice(0,-1):base) + '/auth/login', {
-                                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ email: email, password: password }),
-                                });
-                                if(!res.ok) throw new Error('Credenciais inválidas');
-                                showFeedback('Entrando...', 'success');
-                                globalThis.location.replace(resolve('agenda.html'));
-                                return;
-                            }
-
-                            await new Promise(r=>setTimeout(r,700));
-                            try { var mock = { id: 'local-1', name: 'Usuário Teste', email: email, role: 'cliente' }; localStorage.setItem('user', JSON.stringify(mock)); } catch(e){}
-                            showFeedback('Login efetuado (simulado). Redirecionando...', 'success');
-                            setTimeout(()=> globalThis.location.replace(resolve('agenda.html')), 600);
-                        }catch(err){ console.error(err); showFeedback(err.message || 'Falha ao autenticar', 'error'); }
-                        finally{ btn.disabled = false; btn.textContent = original; }
-                    });
-                });
-            </script>
+                    await new Promise(r=>setTimeout(r,700));
+                    try { var mock = { id: 'local-1', name: 'Usuário Teste', email: email, role: 'cliente' }; localStorage.setItem('user', JSON.stringify(mock)); } catch(e){}
+                    showFeedback('Login efetuado (simulado). Redirecionando...', 'success');
+                    setTimeout(()=> globalThis.location.replace(resolvePath(dashboardForUser(mock))), 600);
+                }catch(err){ console.error(err); showFeedback(err.message || 'Falha ao autenticar', 'error'); }
+                finally{ btn.disabled = false; btn.textContent = original; }
+            });
+        });
+    </script>
 </body>
 </html>

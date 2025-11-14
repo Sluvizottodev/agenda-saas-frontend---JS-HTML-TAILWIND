@@ -1,27 +1,53 @@
-<div class="bg-white p-4 rounded shadow" id="register-form-root">
-  <h3 class="text-lg font-semibold mb-3">Registrar usuário</h3>
-  <form id="formRegister" class="space-y-3">
+<div class="bg-white p-6 rounded shadow" id="register-form-root">
+  <h3 class="text-2xl font-semibold mb-4">Criar conta</h3>
+  <p class="text-sm text-gray-600 mb-4">Crie sua conta para agendar ou oferecer serviços. Campos marcados com <span class="font-medium">*</span> são obrigatórios.</p>
+  <form id="formRegister" class="space-y-4" novalidate>
     <div>
-      <label class="block text-sm font-medium text-gray-700">Nome</label>
-      <input name="name" type="text" required class="mt-1 block w-full rounded border-gray-300 px-3 py-2" />
+      <label for="reg-name" class="block text-sm font-medium text-gray-700">Nome <span class="text-red-500">*</span></label>
+      <input id="reg-name" name="name" type="text" required class="mt-1 block w-full rounded border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200" aria-describedby="err-name" autofocus />
+      <div id="err-name" class="text-xs text-red-600 mt-1" aria-live="polite"></div>
     </div>
+
     <div>
-      <label class="block text-sm font-medium text-gray-700">Email</label>
-      <input name="email" type="email" required class="mt-1 block w-full rounded border-gray-300 px-3 py-2" />
+      <label for="reg-email" class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
+      <input id="reg-email" name="email" type="email" required class="mt-1 block w-full rounded border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200" aria-describedby="err-email" />
+      <div id="err-email" class="text-xs text-red-600 mt-1" aria-live="polite"></div>
     </div>
+
     <div>
-      <label class="block text-sm font-medium text-gray-700">Senha</label>
-      <input name="password" type="password" required minlength="6" class="mt-1 block w-full rounded border-gray-300 px-3 py-2" />
+      <label for="reg-password" class="block text-sm font-medium text-gray-700">Senha <span class="text-red-500">*</span></label>
+      <div class="relative">
+        <input id="reg-password" name="password" type="password" required minlength="6" class="mt-1 block w-full rounded border-gray-300 px-3 py-2 pr-24 focus:outline-none focus:ring-2 focus:ring-blue-200" aria-describedby="err-password pass-help" />
+        <button type="button" id="toggle-pass" class="absolute right-2 top-2 text-xs text-gray-600 px-2 py-1 rounded">Mostrar</button>
+      </div>
+      <div id="pass-help" class="text-xs text-gray-500 mt-1">Mínimo 6 caracteres.</div>
+      <div id="err-password" class="text-xs text-red-600 mt-1" aria-live="polite"></div>
+      <div class="mt-2">
+        <div id="pass-strength" class="h-2 bg-gray-100 rounded overflow-hidden">
+          <div id="pass-strength-bar" class="h-full bg-red-400 w-0 transition-width"></div>
+        </div>
+      </div>
     </div>
+
     <div>
-      <label class="block text-sm font-medium text-gray-700">Role</label>
-      <select name="role" class="mt-1 block w-full rounded border-gray-300 px-3 py-2">
-        <option value="cliente">cliente</option>
-        <option value="prestador">prestador</option>
-      </select>
+      <label for="reg-confirm" class="block text-sm font-medium text-gray-700">Confirmar senha <span class="text-red-500">*</span></label>
+      <input id="reg-confirm" name="confirmPassword" type="password" required class="mt-1 block w-full rounded border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200" aria-describedby="err-confirm" />
+      <div id="err-confirm" class="text-xs text-red-600 mt-1" aria-live="polite"></div>
     </div>
+
     <div>
-      <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded">Criar usuário</button>
+      <label class="block text-sm font-medium text-gray-700">Você é</label>
+      <div class="mt-1 flex gap-3 items-center">
+        <label class="inline-flex items-center"><input type="radio" name="role" value="cliente" checked class="mr-2"/> Cliente</label>
+        <label class="inline-flex items-center"><input type="radio" name="role" value="prestador" class="mr-2"/> Prestador</label>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between">
+      <button id="reg-submit" type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded disabled:opacity-60" aria-busy="false">
+        <span id="reg-submit-text">Criar conta</span>
+      </button>
+      <a href="login.html" class="text-sm text-blue-600">Já tem conta? Entrar</a>
     </div>
   </form>
 </div>

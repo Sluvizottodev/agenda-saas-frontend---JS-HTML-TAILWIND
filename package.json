@@ -10,8 +10,8 @@
   "scripts": {
     "build:css": "npx tailwindcss -i ./public/styles/tailwind.css -o ./public/styles/style.css --minify",
     "watch:css": "npx tailwindcss -i ./public/styles/tailwind.css -o ./public/styles/style.css --watch",
-    "start": "http-server ./public -p 3000",
-    "dev": "nodemon --watch public --ext js,css,html --exec \"http-server ./public -p 3000\"",
+  "start": "http-server ./public -p 3000 -c-1",
+  "dev": "nodemon --watch public --ext js,css,html --exec http-server ./public -p 3000 -c-1",
     "test": ""
   },
   "dependencies": {

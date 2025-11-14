@@ -5,19 +5,15 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Register</title>
-        <style>body{padding:1rem}</style>
+    <link rel="stylesheet" href="../styles/style.css">
 </head>
-<body>
-    <header data-component="header"></header>
-
-    <main class="max-w-2xl mx-auto">
+<body class="bg-gray-50 font-sans min-h-screen text-gray-800">
+    <main class="max-w-2xl mx-auto py-12 px-4">
         <div data-component="registerForm"></div>
     </main>
 
-    <footer data-component="footer"></footer>
-
     <script type="module">
-        import { loadComponents } from '/src/js/components-loader.js';
+        import { loadComponents } from '../js/components-loader.js';
         document.addEventListener('DOMContentLoaded', async () => {
             await loadComponents();
         });
