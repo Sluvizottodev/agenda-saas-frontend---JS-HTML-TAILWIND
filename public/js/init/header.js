@@ -57,7 +57,7 @@ export function initHeader() {
       const dash = dashboardForUser(user);
       linkDashboard.setAttribute('href', resolvePath(dash));
     }
-    if (btnLogout) btnLogout.addEventListener('click', function(){ localStorage.removeItem('user'); window.location.href = resolvePath('login.html'); });
+    if (btnLogout) btnLogout.addEventListener('click', function(){ localStorage.removeItem('user_data'); localStorage.removeItem('auth_token'); router.redirectToLogin(); });
 
     try{
       const actionsContainerId = 'header-quick-actions';

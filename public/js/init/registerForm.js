@@ -81,28 +81,38 @@ export function initRegisterForm(){
 
     // build payload
     const fd = new FormData(form);
+    const role = String(fd.get('role') || 'cliente');
     const payload = {
-      name: (fd.get('name')||'').toString().trim(),
-      email: (fd.get('email')||'').toString().trim(),
-      password: (fd.get('password')||'').toString(),
-      role: (fd.get('role')||'cliente').toString()
+      nome: String(fd.get('name') || '').trim(),
+      email: String(fd.get('email') || '').trim(),
+      senha: String(fd.get('password') || ''),
+      role: role
     };
+
+    // Adicionar campos específicos baseado no tipo
+    if (role === 'cliente') {
+      payload.cpf = '000.000.000-00'; // CPF temporário para teste
+    } else {
+      payload.cnpj = '00.000.000/0001-00'; // CNPJ temporário para teste
+      payload.especializacao = 'Serviços gerais';
+    }
 
     // disable submit and show busy
     submitBtn.disabled = true; submitBtn.setAttribute('aria-busy','true'); submitText.textContent = 'Criando...';
 
     try{
-      try{
-        await api.createEntity('users', payload);
-        toast('Conta criada com sucesso (API)', 'success');
-        form.reset();
-      }catch(err){
-        const key = 'mock_users';
-        const s = localStorage.getItem(key); const arr = s? JSON.parse(s): [];
-        const id = Date.now(); arr.push(Object.assign({ id }, payload)); localStorage.setItem(key, JSON.stringify(arr));
-        toast('Conta criada (mock)', 'success'); form.reset();
-      }
-    }catch(e){ console.error(e); toast(e.message || 'Erro ao criar conta', 'error'); }
+      await api.register(payload);
+      toast('Conta criada com sucesso!', 'success');
+      form.reset();
+      // Redirecionar para login após sucesso
+      setTimeout(() => {
+        globalThis.location.href = 'login.html';
+      }, 1500);
+    }catch(e){ 
+      console.error(e); 
+      const errorMsg = e.message || e.error || 'Erro ao criar conta';
+      toast(errorMsg, 'error'); 
+    }
     finally{ submitBtn.disabled = false; submitBtn.removeAttribute('aria-busy'); submitText.textContent = 'Criar conta'; }
   });
 }

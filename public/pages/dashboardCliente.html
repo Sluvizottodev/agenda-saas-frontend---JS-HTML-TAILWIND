@@ -15,16 +15,23 @@
 
   <script type="module">
   import { loadComponents } from '../js/components-loader.js';
-  import { requireRole } from '../js/utils/auth.js';
-  import initClienteDashboard from '../js/pages/dashboardCliente.js';
-  document.addEventListener('DOMContentLoaded', async () => {
-    if(!requireRole('cliente')) return;
-    await loadComponents();
-
-    const roleArea = document.getElementById('role-area');
+  import { requireRole, getUser } from '../js/utils/auth.js';
+  
+  // Função de fallback caso os módulos complexos falhem
+  async function initBasicDashboard() {
+    console.log('Iniciando dashboard básico...');
+    
+    const user = getUser();
+    if (!user) {
+      console.error('Usuário não encontrado');
+      return;
+    }
+    
+    // Atualizar título
     const title = document.getElementById('dashboard-title');
-    if (title) title.textContent = 'Dashboard — Cliente';
+    if (title) title.textContent = `Dashboard — ${user.name}`;
 
+    // Atualizar estatísticas básicas
     const next = document.getElementById('stat-next-appointments');
     const rev = document.getElementById('stat-revenue');
     const rating = document.getElementById('stat-rating');
@@ -32,27 +39,70 @@
     if (rev) rev.textContent = 'R$ 0,00';
     if (rating) rating.textContent = '—';
 
-    if (roleArea) roleArea.innerHTML = `
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-white rounded shadow p-4">
-          <h3 class="font-semibold">Próximos agendamentos</h3>
-          <ul class="mt-2 text-sm text-gray-700">
-            <li>10/11 — 14:00 — Corte com João</li>
-            <li>12/11 — 09:00 — Manicure com Maria</li>
-          </ul>
+    // Adicionar conteúdo do cliente
+    const roleArea = document.getElementById('role-area');
+    if (roleArea) {
+      roleArea.innerHTML = `
+        <div class="flex items-center justify-end mb-4" id="client-actions">
+          <a href="/pages/agenda.html" class="px-3 py-1 rounded bg-blue-600 text-white text-sm">Agendar</a>
         </div>
-        <div class="bg-white rounded shadow p-4">
-          <h3 class="font-semibold">Últimos prestadores</h3>
-          <div class="mt-2 text-sm text-gray-700">Você visitou 3 prestadores nas últimas duas semanas.</div>
+        <div class="max-w-4xl mx-auto space-y-3" id="client-content">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white rounded shadow p-4">
+              <h3 class="font-semibold">Próximos agendamentos</h3>
+              <ul class="mt-2 text-sm text-gray-700">
+                <li>10/11 — 14:00 — Corte com João</li>
+                <li>12/11 — 09:00 — Manicure com Maria</li>
+              </ul>
+            </div>
+            <div class="bg-white rounded shadow p-4">
+              <h3 class="font-semibold">Últimos prestadores</h3>
+              <div class="mt-2 text-sm text-gray-700">Você visitou 3 prestadores nas últimas duas semanas.</div>
+            </div>
+          </div>
+          <div class="mt-4 bg-white rounded shadow p-4">
+            <h3 class="font-semibold">Suas avaliações</h3>
+            <div class="mt-2 text-sm text-gray-700">Nenhuma avaliação recente.</div>
+          </div>
         </div>
-      </div>
-      <div class="mt-4 bg-white rounded shadow p-4">
-        <h3 class="font-semibold">Suas avaliações</h3>
-        <div class="mt-2 text-sm text-gray-700">Nenhuma avaliação recente.</div>
-      </div>
-    `;
-    // initialize the client dashboard module (lists real appointments)
-    try{ initClienteDashboard(); }catch(e){ console.error('initClienteDashboard failed', e); }
+      `;
+    }
+  }
+  
+  document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Iniciando dashboard do cliente...');
+    
+    // Verificar autenticação primeiro
+    if (!requireRole('CLIENTE')) {
+      console.log('Redirecionando por falta de permissão');
+      return;
+    }
+    
+    try {
+      // Tentar carregar componentes
+      await loadComponents();
+      console.log('Componentes carregados com sucesso');
+      
+      // Inicializar dashboard básico
+      await initBasicDashboard();
+      
+      // Tentar carregar o módulo avançado
+      try {
+        const { default: initClienteDashboard } = await import('../js/pages/dashboardCliente.js');
+        if (typeof initClienteDashboard === 'function') {
+          console.log('Carregando módulo avançado do dashboard...');
+          initClienteDashboard();
+        }
+      } catch (moduleError) {
+        console.warn('Falha ao carregar módulo avançado, usando versão básica:', moduleError);
+      }
+      
+    } catch (error) {
+      console.error('Erro ao carregar dashboard:', error);
+      
+      // Fallback para versão básica em caso de erro
+      await initBasicDashboard();
+    }
   });
   </script>
   </body>

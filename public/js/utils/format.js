@@ -1,4 +1,3 @@
-// Utilities to format and parse dates for the UI
 export function toDateObj(d){
   if (!d) return null;
   if (d instanceof Date) return d;
@@ -8,7 +7,6 @@ export function toDateObj(d){
 }
 
 export function formatDateReadable(input, opts = {}){
-  // opts: { dateOnly: bool, timeOnly: bool, locale }
   try{
     const locale = opts.locale || 'pt-BR';
     const dt = toDateObj(input);
@@ -33,7 +31,6 @@ export function formatTimeShort(input, locale = 'pt-BR'){
 }
 
 export function toInputDatetimeLocal(input){
-  // returns YYYY-MM-DDTHH:MM suitable for <input type="datetime-local"> value
   const dt = toDateObj(input) || new Date();
   const pad = (n) => String(n).padStart(2,'0');
   const year = dt.getFullYear();

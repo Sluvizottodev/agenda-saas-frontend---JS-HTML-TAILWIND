@@ -29,9 +29,15 @@
       const loading = document.getElementById('profile-loading');
 
       let user = null;
-      try { const s = localStorage.getItem('user'); if (s) user = JSON.parse(s); } catch (e) { user = null; }
-      if (!user && window.__USER__) user = window.__USER__;
-      if (!user) { function resolve(p){ const path=location.pathname||''; const inPages=path.includes('/pages/')||path.includes('/src/pages/'); return inPages? p : '/src/pages/'+p; } window.location.href = resolve('login.html'); return; }
+      try { const s = localStorage.getItem('user_data'); if (s) user = JSON.parse(s); } catch (e) { user = null; }
+      if (!user && globalThis.__USER__) user = globalThis.__USER__;
+      if (!user) { 
+        import('../js/utils/router.js').then(module => {
+          const router = module.default;
+          router.redirectToLogin();
+        });
+        return; 
+      }
 
       loading.remove();
       const form = document.createElement('form');

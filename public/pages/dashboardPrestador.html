@@ -18,7 +18,7 @@
 		import { requireRole } from '../js/utils/auth.js';
 		import { initProviderDashboard } from '../js/pages/dashboardPrestador.js';
 		document.addEventListener('DOMContentLoaded', async () => {
-			if(!requireRole('prestador')) return;
+			if(!requireRole('PRESTADOR')) return;
 			await loadComponents();
 			initProviderDashboard();
 		});
