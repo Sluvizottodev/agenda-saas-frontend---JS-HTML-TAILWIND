@@ -1,8 +1,9 @@
 // Configuração da API base
-const API_BASE = import.meta.env?.VITE_API_BASE_URL || window.API_BASE || window.__API_BASE__ || 'http://localhost:8080/api';
+const API_BASE = window.API_BASE || window.__API_BASE__ || 'http://localhost:8080/api';
 
 // Classe para gerenciar a comunicação com a API
 import router from '../utils/router.js';
+import toast from '../utils/toast.js';
 
 class ApiClient {
 	constructor(baseUrl = API_BASE) {
@@ -36,7 +37,6 @@ class ApiClient {
 			...options.headers
 		};
 
-		// Adicionar token de autorização se disponível
 		const token = this.getToken();
 		if (token) {
 			headers['Authorization'] = `Bearer ${token}`;
@@ -62,6 +62,7 @@ class ApiClient {
 			if (response.status === 401) {
 				this.setToken(null);
 				if (!router.isCurrentPage('login')) {
+					toast.error('Sua sessão expirou. Faça login novamente.');
 					router.redirectToLogin();
 				}
 				throw new Error('Token expirado. Faça login novamente.');
@@ -89,6 +90,17 @@ class ApiClient {
 				const error = new Error(errorMessage);
 				error.status = response.status;
 				error.body = data;
+				
+				if (response.status === 404) {
+					toast.warning('Recurso não encontrado.');
+				} else if (response.status === 403) {
+					toast.error('Você não tem permissão para acessar este recurso.');
+				} else if (response.status === 400) {
+					toast.warning(errorMessage);
+				} else if (response.status >= 500) {
+					toast.error('Erro no servidor. Tente novamente mais tarde.');
+				}
+				
 				throw error;
 			}
 
@@ -99,6 +111,7 @@ class ApiClient {
 			console.error(`[API] Error:`, error);
 			
 			if (error.name === 'TypeError' && error.message.includes('fetch')) {
+				toast.error('Erro de conexão. Verifique sua internet ou se o servidor está funcionando.');
 				throw new Error('Erro de conexão. Verifique sua internet ou se o servidor está funcionando.');
 			}
 			
@@ -151,7 +164,6 @@ class ApiClient {
 	}
 
 	async register(userData) {
-		// Determinar endpoint baseado no tipo de usuário
 		const endpoint = userData.role === 'prestador' ? '/auth/register/prestador' : '/auth/register/cliente';
 		return this.request(endpoint, {
 			method: 'POST',
@@ -163,7 +175,6 @@ class ApiClient {
 		try {
 			await this.request('/auth/logout', { method: 'POST' });
 		} catch (error) {
-			// Ignorar erro de logout
 			console.warn('Erro no logout:', error.message);
 		} finally {
 			this.setToken(null);
@@ -178,13 +189,11 @@ class ApiClient {
 // Instância singleton da API
 const apiClient = new ApiClient();
 
-// Exportar métodos para compatibilidade com código existente
 export const listEntities = (entity, query) => apiClient.list(entity, query);
 export const getEntity = (entity, id) => apiClient.get(entity, id);
 export const createEntity = (entity, data) => apiClient.create(entity, data);
 export const updateEntity = (entity, id, data) => apiClient.update(entity, id, data);
 export const deleteEntity = (entity, id) => apiClient.delete(entity, id);
 
-// Exportar cliente da API
 export default apiClient;
 

@@ -5,6 +5,7 @@ import { initFooter } from './init/footer.js';
 import { initDashboardSidebar } from './init/dashboardSidebar.js';
 import { initRegisterForm } from './init/registerForm.js';
 import { seedDefault } from './init/seed.js';
+import { setupGlobalErrorHandler, setupPageNotFoundHandler } from './utils/globalErrorHandler.js';
 
 export async function loadHeaderFooter() {
   try {
@@ -39,6 +40,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       l.setAttribute('href', url.toString());
     });
   } catch (e) { }
+
+  setupGlobalErrorHandler();
+  setupPageNotFoundHandler();
 
   await loadComponents().catch(console.error);
   try { seedDefault(); } catch (e) { console.warn('seed error', e); }
