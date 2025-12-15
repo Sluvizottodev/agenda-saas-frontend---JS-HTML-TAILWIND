@@ -13,13 +13,12 @@
                 </div>
             </div>
 
-            
-            <nav class="hidden md:flex space-x-8" aria-label="Main navigation">
-                <a href="/pages/dashboardCliente.html" class="nav-link text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200">Dashboard</a>
-                <a href="/pages/clientes.html" class="nav-link text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200">Clientes</a>
-                <a href="/pages/prestadores.html" class="nav-link text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200">Prestadores</a>
-                <a href="/pages/servicos.html" class="nav-link text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200">Serviços</a>
-                <a href="/pages/agendamentos.html" class="nav-link text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200">Agendamentos</a>
+            <nav class="hidden md:flex space-x-8" aria-label="Main navigation" id="desktop-nav">
+                <a href="/pages/dashboardCliente.html" class="nav-link" data-nav="dashboard" style="display: none;">Dashboard</a>
+                <a href="/pages/servicos.html" class="nav-link" data-nav="servicos" style="display: none;">Serviços</a>
+                <a href="/pages/horarios.html" class="nav-link" data-nav="horarios" style="display: none;">Horários</a>
+                <a href="/pages/prestadores.html" class="nav-link" data-nav="prestadores" style="display: none;">Prestadores</a>
+                <a href="/pages/profile.html" class="nav-link" data-nav="profile" style="display: none;">Perfil</a>
             </nav>
 
             
@@ -103,5 +102,17 @@
 <style>
 body {
     padding-top: 80px;
+}
+.nav-link {
+    @apply text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200;
+}
+.nav-link.active {
+    @apply text-blue-600 font-bold;
+}
+.mobile-nav-link {
+    @apply flex items-center px-3 py-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200;
+}
+.mobile-nav-link.active {
+    @apply text-blue-600 bg-blue-50;
 }
 </style>

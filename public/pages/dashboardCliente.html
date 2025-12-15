@@ -9,101 +9,106 @@
   <body class="bg-gray-50 font-sans min-h-screen text-gray-800">
     <header data-component="header"></header>
 
-    <div data-component="dashboard"></div>
+    <main class="max-w-7xl mx-auto px-4 py-8 mb-20">
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Meus Agendamentos</h1>
+        <p class="text-gray-600 mt-2">Gerencie seus agendamentos com prestadores de serviço</p>
+      </div>
+
+      <div class="mb-6">
+        <a href="/pages/agendar-servico.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition">
+          + Novo Agendamento
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow p-6">
+          <div class="text-gray-600 text-sm font-medium">Próximos Agendamentos</div>
+          <div class="text-3xl font-bold text-blue-600 mt-2" id="stat-proximos">0</div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+          <div class="text-gray-600 text-sm font-medium">Histórico</div>
+          <div class="text-3xl font-bold text-green-600 mt-2" id="stat-historico">0</div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+          <div class="text-gray-600 text-sm font-medium">Prestadores Favoritos</div>
+          <div class="text-3xl font-bold text-purple-600 mt-2" id="stat-favoritos">0</div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow">
+        <div class="border-b p-6">
+          <h2 class="text-xl font-semibold text-gray-900">Seus Agendamentos</h2>
+        </div>
+        <div id="lista-agendamentos" class="p-6">
+          <p class="text-gray-500 text-center">Nenhum agendamento ainda.</p>
+        </div>
+      </div>
+    </main>
 
     <footer data-component="footer"></footer>
 
   <script type="module">
   import { loadComponents } from '../js/components-loader.js';
-  import { requireRole, getUser } from '../js/utils/auth.js';
-  
-  // Função de fallback caso os módulos complexos falhem
-  async function initBasicDashboard() {
-    console.log('Iniciando dashboard básico...');
-    
-    const user = getUser();
-    if (!user) {
-      console.error('Usuário não encontrado');
-      return;
-    }
-    
-    // Atualizar título
-    const title = document.getElementById('dashboard-title');
-    if (title) title.textContent = `Dashboard — ${user.name}`;
-
-    // Atualizar estatísticas básicas
-    const next = document.getElementById('stat-next-appointments');
-    const rev = document.getElementById('stat-revenue');
-    const rating = document.getElementById('stat-rating');
-    if (next) next.textContent = '2';
-    if (rev) rev.textContent = 'R$ 0,00';
-    if (rating) rating.textContent = '—';
-
-    // Adicionar conteúdo do cliente
-    const roleArea = document.getElementById('role-area');
-    if (roleArea) {
-      roleArea.innerHTML = `
-        <div class="flex items-center justify-end mb-4" id="client-actions">
-          <a href="/pages/agenda.html" class="px-3 py-1 rounded bg-blue-600 text-white text-sm">Agendar</a>
-        </div>
-        <div class="max-w-4xl mx-auto space-y-3" id="client-content">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white rounded shadow p-4">
-              <h3 class="font-semibold">Próximos agendamentos</h3>
-              <ul class="mt-2 text-sm text-gray-700">
-                <li>10/11 — 14:00 — Corte com João</li>
-                <li>12/11 — 09:00 — Manicure com Maria</li>
-              </ul>
-            </div>
-            <div class="bg-white rounded shadow p-4">
-              <h3 class="font-semibold">Últimos prestadores</h3>
-              <div class="mt-2 text-sm text-gray-700">Você visitou 3 prestadores nas últimas duas semanas.</div>
-            </div>
-          </div>
-          <div class="mt-4 bg-white rounded shadow p-4">
-            <h3 class="font-semibold">Suas avaliações</h3>
-            <div class="mt-2 text-sm text-gray-700">Nenhuma avaliação recente.</div>
-          </div>
-        </div>
-      `;
-    }
-  }
+  import { requireRole, getRole } from '../js/utils/auth.js';
   
   document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Iniciando dashboard do cliente...');
+    if (!requireRole('CLIENTE')) return;
     
-    // Verificar autenticação primeiro
-    if (!requireRole('CLIENTE')) {
-      console.log('Redirecionando por falta de permissão');
+    await loadComponents();
+    initClientDashboard();
+  });
+
+  function initClientDashboard() {
+    loadAgendamentos();
+  }
+
+  async function loadAgendamentos() {
+    try {
+      const response = await fetch('/api/agendamentos', {
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('auth_token')
+        }
+      });
+      
+      if (response.ok) {
+        const agendamentos = await response.json();
+        renderAgendamentos(agendamentos || []);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar agendamentos:', error);
+    }
+  }
+
+  function renderAgendamentos(agendamentos) {
+    const container = document.getElementById('lista-agendamentos');
+    
+    if (!agendamentos || agendamentos.length === 0) {
+      container.innerHTML = '<p class="text-gray-500 text-center py-8">Nenhum agendamento ainda.</p>';
       return;
     }
+
+    const proximosCount = agendamentos.filter(a => new Date(a.data) > new Date()).length;
+    const historicoCount = agendamentos.length - proximosCount;
     
-    try {
-      // Tentar carregar componentes
-      await loadComponents();
-      console.log('Componentes carregados com sucesso');
-      
-      // Inicializar dashboard básico
-      await initBasicDashboard();
-      
-      // Tentar carregar o módulo avançado
-      try {
-        const { default: initClienteDashboard } = await import('../js/pages/dashboardCliente.js');
-        if (typeof initClienteDashboard === 'function') {
-          console.log('Carregando módulo avançado do dashboard...');
-          initClienteDashboard();
-        }
-      } catch (moduleError) {
-        console.warn('Falha ao carregar módulo avançado, usando versão básica:', moduleError);
-      }
-      
-    } catch (error) {
-      console.error('Erro ao carregar dashboard:', error);
-      
-      // Fallback para versão básica em caso de erro
-      await initBasicDashboard();
-    }
-  });
+    document.getElementById('stat-proximos').textContent = proximosCount;
+    document.getElementById('stat-historico').textContent = historicoCount;
+
+    container.innerHTML = agendamentos.map(agendamento => `
+      <div class="border rounded-lg p-4 mb-4 hover:bg-gray-50 transition">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="font-semibold text-gray-900">${agendamento.servico?.nome || 'Serviço'}</p>
+            <p class="text-sm text-gray-600">${agendamento.prestador?.nome || 'Prestador'}</p>
+            <p class="text-sm text-blue-600 mt-1">${new Date(agendamento.data).toLocaleDateString('pt-BR')} às ${agendamento.hora || '--:--'}</p>
+          </div>
+          <span class="text-xs font-medium px-3 py-1 rounded-full ${agendamento.status === 'CONFIRMADO' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+            ${agendamento.status || 'Pendente'}
+          </span>
+        </div>
+      </div>
+    `).join('');
+  }
   </script>
   </body>
 </html>

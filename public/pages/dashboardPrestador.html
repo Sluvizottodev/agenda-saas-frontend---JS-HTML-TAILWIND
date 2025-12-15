@@ -4,24 +4,179 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
 		<title>Dashboard — Prestador</title>
-	<link rel="stylesheet" href="../styles/style.css">
+		<link rel="stylesheet" href="../styles/style.css">
 	</head>
 	<body class="bg-gray-50 font-sans min-h-screen text-gray-800">
 		<header data-component="header"></header>
 
-		<div data-component="dashboard"></div>
+		<main class="max-w-7xl mx-auto px-4 py-8 mb-20">
+			<div class="mb-8">
+				<h1 class="text-3xl font-bold text-gray-900">Painel do Prestador</h1>
+				<p class="text-gray-600 mt-2">Gerencie seus serviços, horários e agendamentos</p>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+				<div class="bg-white rounded-lg shadow p-6">
+					<div class="text-gray-600 text-sm font-medium">Agendamentos Hoje</div>
+					<div class="text-3xl font-bold text-blue-600 mt-2" id="stat-hoje">0</div>
+				</div>
+				<div class="bg-white rounded-lg shadow p-6">
+					<div class="text-gray-600 text-sm font-medium">Próximos 7 dias</div>
+					<div class="text-3xl font-bold text-purple-600 mt-2" id="stat-semana">0</div>
+				</div>
+				<div class="bg-white rounded-lg shadow p-6">
+					<div class="text-gray-600 text-sm font-medium">Serviços Cadastrados</div>
+					<div class="text-3xl font-bold text-green-600 mt-2" id="stat-servicos">0</div>
+				</div>
+				<div class="bg-white rounded-lg shadow p-6">
+					<div class="text-gray-600 text-sm font-medium">Taxa de Ocupação</div>
+					<div class="text-3xl font-bold text-orange-600 mt-2" id="stat-ocupacao">0%</div>
+				</div>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+				<a href="/pages/agenda-prestador.html" class="block bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition flex items-center justify-center">
+					+ Novo Serviço
+				</a>
+				<a href="/pages/agenda-prestador.html" class="block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition flex items-center justify-center">
+					⏰ Gerenciar Horários
+				</a>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+				<div class="bg-white rounded-lg shadow">
+					<div class="border-b p-6">
+						<h2 class="text-xl font-semibold text-gray-900">Próximos Agendamentos</h2>
+					</div>
+					<div id="lista-agendamentos" class="p-6">
+						<p class="text-gray-500 text-center">Carregando...</p>
+					</div>
+				</div>
+
+				<div class="bg-white rounded-lg shadow">
+					<div class="border-b p-6">
+						<h2 class="text-xl font-semibold text-gray-900">Seus Serviços</h2>
+					</div>
+					<div id="lista-servicos" class="p-6">
+						<p class="text-gray-500 text-center">Carregando...</p>
+					</div>
+				</div>
+			</div>
+		</main>
 
 		<footer data-component="footer"></footer>
 
-	<script type="module">
+		<script type="module">
 		import { loadComponents } from '../js/components-loader.js';
 		import { requireRole } from '../js/utils/auth.js';
-		import { initProviderDashboard } from '../js/pages/dashboardPrestador.js';
+		
 		document.addEventListener('DOMContentLoaded', async () => {
 			if(!requireRole('PRESTADOR')) return;
 			await loadComponents();
 			initProviderDashboard();
 		});
-	</script>
+
+		async function initProviderDashboard() {
+			await loadAgendamentos();
+			await loadServicos();
+		}
+
+		async function loadAgendamentos() {
+			try {
+				const response = await fetch('/api/agendamentos', {
+					headers: {
+						'Authorization': 'Bearer ' + localStorage.getItem('auth_token')
+					}
+				});
+				
+				if (response.ok) {
+					const agendamentos = await response.json();
+					renderAgendamentos(agendamentos || []);
+				}
+			} catch (error) {
+				console.error('Erro ao carregar agendamentos:', error);
+			}
+		}
+
+		async function loadServicos() {
+			try {
+				const response = await fetch('/api/servicos', {
+					headers: {
+						'Authorization': 'Bearer ' + localStorage.getItem('auth_token')
+					}
+				});
+				
+				if (response.ok) {
+					const servicos = await response.json();
+					renderServicos(servicos || []);
+				}
+			} catch (error) {
+				console.error('Erro ao carregar serviços:', error);
+			}
+		}
+
+		function renderAgendamentos(agendamentos) {
+			const container = document.getElementById('lista-agendamentos');
+			const hoje = new Date().toDateString();
+			const agendamentosHoje = agendamentos.filter(a => new Date(a.data).toDateString() === hoje).length;
+			const agendamento7dias = agendamentos.filter(a => {
+				const data = new Date(a.data);
+				const diaAtual = new Date();
+				const diferenca = (data - diaAtual) / (1000 * 60 * 60 * 24);
+				return diferenca >= 0 && diferenca <= 7;
+			}).length;
+
+			document.getElementById('stat-hoje').textContent = agendamentosHoje;
+			document.getElementById('stat-semana').textContent = agendamento7dias;
+
+			if (!agendamentos || agendamentos.length === 0) {
+				container.innerHTML = '<p class="text-gray-500 text-center py-8">Nenhum agendamento próximo.</p>';
+				return;
+			}
+
+			const proximosAgendamentos = agendamentos
+				.filter(a => new Date(a.data) > new Date())
+				.slice(0, 5);
+
+			container.innerHTML = proximosAgendamentos.map(agendamento => `
+				<div class="border rounded-lg p-4 mb-3 hover:bg-blue-50 transition">
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="font-semibold text-gray-900">${agendamento.cliente?.nome || 'Cliente'}</p>
+							<p class="text-sm text-gray-600">${agendamento.servico?.nome || 'Serviço'}</p>
+							<p class="text-sm text-blue-600 mt-1">${new Date(agendamento.data).toLocaleDateString('pt-BR')} às ${agendamento.hora || '--:--'}</p>
+						</div>
+						<span class="text-xs font-medium px-3 py-1 rounded-full ${agendamento.status === 'CONFIRMADO' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+							${agendamento.status || 'Pendente'}
+						</span>
+					</div>
+				</div>
+			`).join('');
+		}
+
+		function renderServicos(servicos) {
+			const container = document.getElementById('lista-servicos');
+			document.getElementById('stat-servicos').textContent = servicos.length;
+
+			if (!servicos || servicos.length === 0) {
+				container.innerHTML = '<p class="text-gray-500 text-center py-8">Nenhum serviço cadastrado. <a href="/pages/servicos.html" class="text-blue-600">Criar um</a></p>';
+				return;
+			}
+
+			container.innerHTML = servicos.slice(0, 5).map(servico => `
+				<div class="border rounded-lg p-4 mb-3 hover:bg-green-50 transition">
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="font-semibold text-gray-900">${servico.nome}</p>
+							<p class="text-sm text-gray-600">R$ ${servico.preco?.toFixed(2) || '0,00'}</p>
+						</div>
+						<span class="text-xs font-medium px-3 py-1 rounded-full ${servico.ativo ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+							${servico.ativo ? 'Ativo' : 'Inativo'}
+						</span>
+					</div>
+				</div>
+			`).join('');
+		}
+		</script>
 	</body>
 </html>

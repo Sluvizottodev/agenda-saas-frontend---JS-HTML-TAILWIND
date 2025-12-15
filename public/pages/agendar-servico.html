@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Serviço</title>
+    <link rel="stylesheet" href="../styles/style.css">
+</head>
+<body class="bg-gray-50">
+    <header data-component="header"></header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 mb-20">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Agendar Serviço</h1>
+            <p class="text-gray-600 mt-2">Escolha um prestador e agende o serviço desejado</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-gray-600 text-sm font-medium">Prestadores Disponíveis</div>
+                <div class="text-3xl font-bold text-blue-600 mt-2" id="stat-prestadores">0</div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-gray-600 text-sm font-medium">Serviços Disponíveis</div>
+                <div class="text-3xl font-bold text-green-600 mt-2" id="stat-servicos">0</div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-gray-600 text-sm font-medium">Próximas Datas</div>
+                <div class="text-3xl font-bold text-purple-600 mt-2" id="stat-datas">0</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <!-- Filtros -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-lg font-semibold mb-4">Filtros</h2>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Prestador</label>
+                    <select id="filter-prestador" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Serviço</label>
+                    <select id="filter-servico" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Data Mínima</label>
+                    <input type="date" id="filter-data" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                </div>
+
+                <button id="btn-filtrar" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">
+                    Filtrar
+                </button>
+            </div>
+
+            <!-- List Serviços Disponíveis -->
+            <div class="md:col-span-3">
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="border-b p-6">
+                        <h2 class="text-xl font-semibold text-gray-900">Serviços Disponíveis</h2>
+                    </div>
+                    <div id="lista-servicos" class="p-6">
+                        <p class="text-gray-500 text-center py-8">Nenhum serviço disponível.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer data-component="footer"></footer>
+
+    <div id="modal-agendamento" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-lg max-w-md w-full p-6">
+            <h2 class="text-xl font-bold mb-4">Agendar Serviço</h2>
+            
+            <div class="mb-4">
+                <p class="text-sm text-gray-600"><strong>Prestador:</strong> <span id="modal-prestador"></span></p>
+                <p class="text-sm text-gray-600 mt-2"><strong>Serviço:</strong> <span id="modal-servico"></span></p>
+                <p class="text-sm text-gray-600 mt-2"><strong>Preço:</strong> R$ <span id="modal-preco"></span></p>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Selecione a Data/Hora</label>
+                <select id="modal-horario" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                    <option value="">Carregando horários...</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Observações</label>
+                <textarea id="modal-observacoes" class="w-full px-3 py-2 border border-gray-300 rounded-lg" rows="3"></textarea>
+            </div>
+
+            <div class="flex space-x-3">
+                <button id="modal-cancelar" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-900 px-4 py-2 rounded-lg font-semibold">
+                    Cancelar
+                </button>
+                <button id="modal-confirmar" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">
+                    Confirmar Agendamento
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+    import { loadComponents } from '../js/components-loader.js';
+    import { requireRole } from '../js/utils/auth.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        if (!requireRole('CLIENTE')) return;
+        
+        await loadComponents();
+        initAgendaCliente();
+    });
+
+    async function initAgendaCliente() {
+        await carregarPrestadores();
+        await carregarServicos();
+        setupFiltros();
+        setupModalEvents();
+    }
+
+    async function carregarPrestadores() {
+        try {
+            const response = await fetch('/api/usuarios?tipo=PRESTADOR', {
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('auth_token') }
+            });
+            
+            if (response.ok) {
+                const prestadores = await response.json() || [];
+                document.getElementById('stat-prestadores').textContent = prestadores.length;
+                
+                const select = document.getElementById('filter-prestador');
+                prestadores.forEach(p => {
+                    const option = document.createElement('option');
+                    option.value = p.id;
+                    option.textContent = p.nome;
+                    select.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error('Erro ao carregar prestadores:', error);
+        }
+    }
+
+    async function carregarServicos() {
+        try {
+            const response = await fetch('/api/servicos', {
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('auth_token') }
+            });
+            
+            if (response.ok) {
+                const servicos = await response.json() || [];
+                document.getElementById('stat-servicos').textContent = servicos.length;
+                
+                const select = document.getElementById('filter-servico');
+                servicos.forEach(s => {
+                    const option = document.createElement('option');
+                    option.value = s.id;
+                    option.textContent = s.nome;
+                    select.appendChild(option);
+                });
+                
+                renderServicos(servicos);
+            }
+        } catch (error) {
+            console.error('Erro ao carregar serviços:', error);
+        }
+    }
+
+    function renderServicos(servicos) {
+        const container = document.getElementById('lista-servicos');
+        
+        if (!servicos || servicos.length === 0) {
+            container.innerHTML = '<p class="text-gray-500 text-center py-8">Nenhum serviço disponível.</p>';
+            return;
+        }
+
+        container.innerHTML = servicos.map(servico => `
+            <div class="border rounded-lg p-4 mb-4 hover:bg-gray-50 transition">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-gray-900">${servico.nome}</h3>
+                        <p class="text-sm text-gray-600 mt-1">${servico.descricao || 'Sem descrição'}</p>
+                        <div class="mt-2 flex items-center space-x-4">
+                            <span class="text-lg font-bold text-blue-600">R$ ${servico.preco?.toFixed(2) || '0,00'}</span>
+                            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Disponível</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">Por: ${servico.prestador?.nome || 'Prestador'}</p>
+                    </div>
+                    <button class="btn-agendar ml-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap" data-servico-id="${servico.id}" data-prestador-id="${servico.prestadorId}">
+                        Agendar
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+        document.querySelectorAll('.btn-agendar').forEach(btn => {
+            btn.addEventListener('click', (e) => abrirModalAgendamento(e.target));
+        });
+    }
+
+    function setupFiltros() {
+        document.getElementById('btn-filtrar').addEventListener('click', aplicarFiltros);
+    }
+
+    function aplicarFiltros() {
+        const prestadorId = document.getElementById('filter-prestador').value;
+        const servicoId = document.getElementById('filter-servico').value;
+        const data = document.getElementById('filter-data').value;
+
+        console.log('Filtros:', { prestadorId, servicoId, data });
+    }
+
+    function abrirModalAgendamento(btn) {
+        const servicoId = btn.dataset.servicoId;
+        const prestadorId = btn.dataset.prestadorId;
+    
+        document.getElementById('modal-agendamento').classList.remove('hidden');
+    }
+
+    function setupModalEvents() {
+        document.getElementById('modal-cancelar').addEventListener('click', () => {
+            document.getElementById('modal-agendamento').classList.add('hidden');
+        });
+
+        document.getElementById('modal-confirmar').addEventListener('click', confirmarAgendamento);
+    }
+
+    async function confirmarAgendamento() {
+        const horario = document.getElementById('modal-horario').value;
+        const observacoes = document.getElementById('modal-observacoes').value;
+
+        if (!horario) {
+            alert('Selecione uma data/hora');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/agendamentos', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('auth_token'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    servicoId: document.getElementById('modal-servico').dataset.id,
+                    data: horario,
+                    observacoes: observacoes
+                })
+            });
+
+            if (response.ok) {
+                alert('Agendamento realizado com sucesso!');
+                document.getElementById('modal-agendamento').classList.add('hidden');
+                await carregarServicos();
+            }
+        } catch (error) {
+            console.error('Erro ao agendar:', error);
+            alert('Erro ao realizar agendamento');
+        }
+    }
+    </script>
+</body>
+</html>

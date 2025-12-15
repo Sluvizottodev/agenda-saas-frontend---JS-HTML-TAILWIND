@@ -1,53 +1,41 @@
-<div class="bg-white p-6 rounded shadow" id="register-form-root">
-  <h3 class="text-2xl font-semibold mb-4">Criar conta</h3>
-  <p class="text-sm text-gray-600 mb-4">Crie sua conta para agendar ou oferecer serviços. Campos marcados com <span class="font-medium">*</span> são obrigatórios.</p>
-  <form id="formRegister" class="space-y-4" novalidate>
-    <div>
-      <label for="reg-name" class="block text-sm font-medium text-gray-700">Nome <span class="text-red-500">*</span></label>
-      <input id="reg-name" name="name" type="text" required class="mt-1 block w-full rounded border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200" aria-describedby="err-name" autofocus />
-      <div id="err-name" class="text-xs text-red-600 mt-1" aria-live="polite"></div>
+<form id="formRegister" class="space-y-4">
+  <div id="registerFeedback" class="mb-4"></div>
+  
+  <div>
+    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+    <input type="text" id="name" name="name" required autofocus placeholder="Seu nome completo" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500" />
+  </div>
+  
+  <div>
+    <label for="reg-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+    <input type="email" id="reg-email" name="email" required placeholder="seu@email.com" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500" />
+  </div>
+  
+  <div>
+    <label for="reg-password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+    <input type="password" id="reg-password" name="password" required minlength="6" placeholder="Mínimo 6 caracteres" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500" />
+  </div>
+  
+  <div>
+    <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">Confirmar Senha</label>
+    <input type="password" id="confirm-password" name="confirmPassword" required placeholder="Digite a senha novamente" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500" />
+  </div>
+  
+  <div>
+    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Conta</label>
+    <div class="flex gap-4">
+      <label class="flex items-center">
+        <input type="radio" name="role" value="CLIENTE" checked class="mr-2" /> Cliente
+      </label>
+      <label class="flex items-center">
+        <input type="radio" name="role" value="PRESTADOR" class="mr-2" /> Prestador
+      </label>
     </div>
-
-    <div>
-      <label for="reg-email" class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
-      <input id="reg-email" name="email" type="email" required class="mt-1 block w-full rounded border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200" aria-describedby="err-email" />
-      <div id="err-email" class="text-xs text-red-600 mt-1" aria-live="polite"></div>
-    </div>
-
-    <div>
-      <label for="reg-password" class="block text-sm font-medium text-gray-700">Senha <span class="text-red-500">*</span></label>
-      <div class="relative">
-        <input id="reg-password" name="password" type="password" required minlength="6" class="mt-1 block w-full rounded border-gray-300 px-3 py-2 pr-24 focus:outline-none focus:ring-2 focus:ring-blue-200" aria-describedby="err-password pass-help" />
-        <button type="button" id="toggle-pass" class="absolute right-2 top-2 text-xs text-gray-600 px-2 py-1 rounded">Mostrar</button>
-      </div>
-      <div id="pass-help" class="text-xs text-gray-500 mt-1">Mínimo 6 caracteres.</div>
-      <div id="err-password" class="text-xs text-red-600 mt-1" aria-live="polite"></div>
-      <div class="mt-2">
-        <div id="pass-strength" class="h-2 bg-gray-100 rounded overflow-hidden">
-          <div id="pass-strength-bar" class="h-full bg-red-400 w-0 transition-width"></div>
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <label for="reg-confirm" class="block text-sm font-medium text-gray-700">Confirmar senha <span class="text-red-500">*</span></label>
-      <input id="reg-confirm" name="confirmPassword" type="password" required class="mt-1 block w-full rounded border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200" aria-describedby="err-confirm" />
-      <div id="err-confirm" class="text-xs text-red-600 mt-1" aria-live="polite"></div>
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Você é</label>
-      <div class="mt-1 flex gap-3 items-center">
-        <label class="inline-flex items-center"><input type="radio" name="role" value="cliente" checked class="mr-2"/> Cliente</label>
-        <label class="inline-flex items-center"><input type="radio" name="role" value="prestador" class="mr-2"/> Prestador</label>
-      </div>
-    </div>
-
-    <div class="flex items-center justify-between">
-      <button id="reg-submit" type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded disabled:opacity-60" aria-busy="false">
-        <span id="reg-submit-text">Criar conta</span>
-      </button>
-      <a href="login.html" class="text-sm text-blue-600">Já tem conta? Entrar</a>
-    </div>
-  </form>
-</div>
+  </div>
+  
+  <button type="submit" id="reg-submit" class="w-full py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700">Criar Conta</button>
+  
+  <div class="text-center pt-2">
+    <button type="button" id="btnFazerLogin" class="text-sm text-blue-600 hover:underline">Já tem conta? Entrar</button>
+  </div>
+</form>
