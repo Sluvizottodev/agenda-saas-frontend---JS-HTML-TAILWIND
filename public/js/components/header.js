@@ -14,7 +14,6 @@ class HeaderManager {
     }
 
     setupEventListeners() {
-        // Logout
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', () => {
@@ -23,7 +22,6 @@ class HeaderManager {
             });
         }
 
-        // Mobile sidebar toggle
         const sidebarToggle = document.getElementById('sidebar-toggle');
         const sidebar = document.getElementById('mobile-sidebar');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
@@ -47,7 +45,6 @@ class HeaderManager {
             });
         }
 
-        // Mobile nav links - close sidebar when clicking
         const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
         mobileNavLinks.forEach(link => {
             link.addEventListener('click', () => {
@@ -64,8 +61,8 @@ class HeaderManager {
         }
 
         const user = this.authManager.getCurrentUser();
+        const role = this.authManager.getRole();
         
-        // Update user info in desktop header
         const userNameEl = document.getElementById('user-name');
         const userRoleEl = document.getElementById('user-role');
         
@@ -73,16 +70,15 @@ class HeaderManager {
             userNameEl.textContent = user.nome;
         }
         
-        if (userRoleEl && user.tipo) {
+        if (userRoleEl && role) {
             const roleLabels = {
                 'CLIENTE': 'Cliente',
-                'PRESTADOR': 'Prestador',
+                'PRESTADOR': 'Prestador de Serviços',
                 'ADMIN': 'Administrador'
             };
-            userRoleEl.textContent = roleLabels[user.tipo] || user.tipo;
+            userRoleEl.textContent = roleLabels[role] || role;
         }
 
-        // Update user info in mobile sidebar
         const mobileUserNameEl = document.getElementById('mobile-user-name');
         const mobileUserRoleEl = document.getElementById('mobile-user-role');
         
@@ -90,43 +86,59 @@ class HeaderManager {
             mobileUserNameEl.textContent = user.nome;
         }
         
-        if (mobileUserRoleEl && user.tipo) {
+        if (mobileUserRoleEl && role) {
             const roleLabels = {
                 'CLIENTE': 'Cliente',
-                'PRESTADOR': 'Prestador',
+                'PRESTADOR': 'Prestador de Serviços',
                 'ADMIN': 'Administrador'
             };
-            mobileUserRoleEl.textContent = roleLabels[user.tipo] || user.tipo;
+            mobileUserRoleEl.textContent = roleLabels[role] || role;
         }
 
-        // Hide navigation items based on user role
-        this.updateNavigationByRole(user.tipo);
+        this.updateNavigationByRole(role);
     }
 
-    updateNavigationByRole(userType) {
-        // Por enquanto, mostrar todos os links para todos os tipos de usuário
-        // Isso pode ser customizado conforme as regras de negócio
-        
-        if (userType === 'CLIENTE') {
-            // Clientes podem ver apenas agendamentos e seus dados
-            // this.hideNavLink('/pages/prestadores.html');
-            // this.hideNavLink('/pages/servicos.html');
-        } else if (userType === 'PRESTADOR') {
-            // Prestadores podem ver seus serviços e agendamentos
-            // this.hideNavLink('/pages/clientes.html');
+    updateNavigationByRole(role) {
+        if (role === 'CLIENTE') {
+            this.showNavLink('dashboard');
+            this.showNavLink('prestadores');
+            this.showNavLink('profile');
+            this.hideNavLink('servicos');
+            this.hideNavLink('horarios');
+        } else if (role === 'PRESTADOR') {
+            this.showNavLink('dashboard');
+            this.showNavLink('servicos');
+            this.showNavLink('horarios');
+            this.showNavLink('profile');
+            this.hideNavLink('prestadores');
+        } else {
+            this.showNavLink('dashboard');
+            this.showNavLink('servicos');
+            this.showNavLink('horarios');
+            this.showNavLink('prestadores');
+            this.showNavLink('profile');
         }
-        // ADMIN ou outros tipos podem ver tudo
     }
 
-    hideNavLink(href) {
-        // Desktop navigation
-        const desktopLink = document.querySelector(`.nav-link[href="${href}"]`);
+    showNavLink(linkId) {
+        const desktopLink = document.querySelector(`.nav-link[data-nav="${linkId}"]`);
+        if (desktopLink) {
+            desktopLink.style.display = '';
+        }
+
+        const mobileLink = document.querySelector(`.mobile-nav-link[data-nav="${linkId}"]`);
+        if (mobileLink) {
+            mobileLink.style.display = '';
+        }
+    }
+
+    hideNavLink(linkId) {
+        const desktopLink = document.querySelector(`.nav-link[data-nav="${linkId}"]`);
         if (desktopLink) {
             desktopLink.style.display = 'none';
         }
 
-        // Mobile navigation
-        const mobileLink = document.querySelector(`.mobile-nav-link[href="${href}"]`);
+        const mobileLink = document.querySelector(`.mobile-nav-link[data-nav="${linkId}"]`);
         if (mobileLink) {
             mobileLink.style.display = 'none';
         }
@@ -135,7 +147,6 @@ class HeaderManager {
     highlightActiveNavLink() {
         const currentPath = globalThis.location.pathname;
         
-        // Desktop navigation
         const navLinks = document.querySelectorAll('.nav-link');
         navLinks.forEach(link => {
             link.classList.remove('text-blue-600', 'font-bold');
@@ -147,7 +158,6 @@ class HeaderManager {
             }
         });
 
-        // Mobile navigation
         const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
         mobileNavLinks.forEach(link => {
             link.classList.remove('text-blue-600', 'bg-blue-50');
@@ -159,9 +169,7 @@ class HeaderManager {
     }
 }
 
-// Auto-initialize when header is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Small delay to ensure header HTML is loaded
     setTimeout(() => {
         new HeaderManager();
     }, 100);
