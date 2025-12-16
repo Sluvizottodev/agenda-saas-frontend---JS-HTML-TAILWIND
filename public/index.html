@@ -1,18 +1,132 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Agenda SaaS</title>
-  <link rel="stylesheet" href="/assets/tailwind.css">
-  <meta http-equiv="refresh" content="0;url=/pages/login.html">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgendaSaaS - Sistema de Agendamentos Simples e Moderno</title>
+    <link rel="stylesheet" href="/styles/style.css"> 
 </head>
-<body>
-    <!-- ainda decidir se usar nextAuth e/ou Bootstrap -->
-  <script>
-    window.location.replace('/pages/login.html');
-  </script>
 
-  <p>Redirecionando para a página de login…</p>
+<body class="bg-white min-h-screen text-gray-800 flex flex-col">
+
+<nav class="bg-white sticky top-0 z-50 border-b border-gray-100/80 backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8"> 
+        <div class="flex items-center justify-between h-16">
+
+            <div class="flex items-center space-x-2">
+                <svg class="h-7 w-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <span class="text-xl font-bold text-gray-900 tracking-tight">AgendaSaaS</span>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <a href="/pages/login.html"
+                   class="text-gray-600 hover:text-blue-600 px-3 py-2 transition-colors text-sm font-medium rounded-lg">
+                    Entrar
+                </a>
+                <a href="/pages/register.html"
+                   class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-md transition transform hover:scale-105">
+                    Começar Grátis
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="flex-grow">
+
+    <section class="bg-white pt-24 pb-40"> 
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center">
+
+            <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 tracking-tight leading-snug">
+                Sua agenda, <span class="text-blue-600">descomplicada</span>.
+            </h1>
+
+            <p class="text-xl text-gray-500 mb-14 max-w-3xl mx-auto leading-relaxed"> 
+                Gerencie agendamentos, clientes e equipe com a plataforma SaaS mais rápida e minimalista do mercado.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-24"> 
+                <a href="/pages/register.html"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-3 rounded-xl font-bold text-lg shadow-xl shadow-blue-500/30 transition transform hover:shadow-blue-500/50">
+                    Criar Conta Grátis
+                </a>
+                <a href="/pages/login.html"
+                    class="border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 px-10 py-3 rounded-xl font-medium text-lg transition">
+                    Fazer Login
+                </a>
+            </div>
+
+            <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200 shadow-xl overflow-hidden max-w-6xl mx-auto"> 
+                <div class="bg-white h-96 w-full rounded-lg border border-gray-200 flex items-center justify-center text-gray-400 text-xl font-medium italic">
+                    
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="bg-white py-24 border-t border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-12 text-center">Nossos Principais Recursos</h2> 
+            <div class="grid md:grid-cols-3 gap-8">
+                
+                <div class="p-6 rounded-xl border border-gray-100 hover:shadow-lg transition duration-300">
+                    <svg class="w-8 h-8 text-blue-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <h3 class="font-bold text-gray-900 mb-1 text-lg">Agenda Inteligente</h3>
+                    <p class="text-base text-gray-500 leading-relaxed">Visualize e reorganize seus compromissos com arrastar e soltar (drag & drop).</p>
+                </div>
+
+                <div class="p-6 rounded-xl border border-gray-100 hover:shadow-lg transition duration-300">
+                    <svg class="w-8 h-8 text-green-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
+                    </svg>
+                    <h3 class="font-bold text-gray-900 mb-1 text-lg">Gestão de Clientes</h3>
+                    <p class="text-base text-gray-500 leading-relaxed">Fichas completas, histórico de serviços e comunicação simplificada.</p>
+                </div>
+
+                <div class="p-6 rounded-xl border border-gray-100 hover:shadow-lg transition duration-300">
+                    <svg class="w-8 h-8 text-purple-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10"/>
+                    </svg>
+                    <h3 class="font-bold text-gray-900 mb-1 text-lg">Relatórios em Tempo Real</h3>
+                    <p class="text-base text-gray-500 leading-relaxed">Métricas chave sobre desempenho, faturamento e ocupação da equipe.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-gray-100 py-24 border-t border-gray-200">
+        <div class="max-w-4xl mx-auto text-center px-6 lg:px-8">
+            <h2 class="text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">Pronto para transformar sua gestão?</h2>
+            <p class="text-gray-600 text-xl mb-8">Comece com o plano gratuito. Sem cartão de crédito, sem compromisso.</p>
+            <a href="/pages/register.html"
+                class="inline-flex items-center bg-blue-600 text-white px-10 py-3 rounded-xl font-bold text-xl shadow-lg shadow-blue-500/40 hover:bg-blue-700 transition">
+                Começar Grátis Agora
+                <svg class="ml-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+</main>
+
+<footer class="bg-white border-t border-gray-200 mt-auto">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-4">
+        <div class="flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+            <p>&copy; 2025 AgendaSaaS. Todos os direitos reservados.</p>
+            <div class="flex space-x-4 mt-2 md:mt-0">
+                <a href="#" class="hover:text-gray-900 transition-colors">Termos de Uso</a>
+                <a href="#" class="hover:text-gray-900 transition-colors">Política de Privacidade</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
 </body>
 </html>

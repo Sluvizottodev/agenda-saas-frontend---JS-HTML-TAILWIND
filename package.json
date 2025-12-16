@@ -8,10 +8,10 @@
     ".": "./index.js"
   },
   "scripts": {
-    "start": "http-server ./public -p 3000",
-    "dev": "nodemon --watch public --ext js,css,html --exec \"http-server ./public -p 3000\"",
-    "build:css": "postcss ./styles/tailwind.css -o ./public/assets/tailwind.css --env production",
-    "watch:css": "postcss ./styles/tailwind.css -o ./public/assets/tailwind.css --watch",
+    "build:css": "npx tailwindcss -i ./public/styles/tailwind.css -o ./public/styles/style.css --minify",
+    "watch:css": "npx tailwindcss -i ./public/styles/tailwind.css -o ./public/styles/style.css --watch",
+  "start": "http-server ./public -p 3000 -c-1",
+  "dev": "nodemon --watch public --ext js,css,html --exec http-server ./public -p 3000 -c-1",
     "test": ""
   },
   "dependencies": {
@@ -21,12 +21,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.16",
+    "@tailwindcss/postcss": "^4.1.17",
     "autoprefixer": "^10.4.21",
     "http-server": "^14.1.1",
     "nodemon": "^3.0.3",
     "postcss": "^8.5.6",
     "postcss-cli": "^11.0.1",
-    "tailwindcss": "^4.1.16"
+    "tailwindcss": "^3.4.18"
   }
 }
